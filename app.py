@@ -30,16 +30,14 @@ sessions = {}
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     """Trang Web Dashboard quản trị thời gian thực"""
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "logs": access_logs[::-1], # Hiện mới nhất lên đầu
-            "total_access": len(access_logs),
-            "unlocked_count": sum(1 for log in access_logs if log["status"] == "UNLOCK"),
-            "denied_count": sum(1 for log in access_logs if log["status"] == "DENIED")
-        }
-    )
+    context = {
+        "request": request,
+        "logs": access_logs[::-1],
+        "total_access": len(access_logs),
+        "unlocked_count": sum(1 for log in access_logs if log["status"] == "UNLOCK"),
+        "denied_count": sum(1 for log in access_logs if log["status"] == "DENIED")
+    }
+    return templates.TemplateResponse(request=request, name="index.html", context=context)
 
 @app.get("/api/logs")
 async def get_logs():
